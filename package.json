@@ -1,0 +1,24 @@
+{
+  "name": "hangman-cli",
+  "version": "1.0.0",
+  "description": "Command-line based hangman",
+  "main": "hangman-cli.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shulme801/hangman-cli.git"
+  },
+  "author": "Steve Hulme",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shulme801/hangman-cli/issues"
+  },
+  "homepage": "https://github.com/shulme801/hangman-cli#readme",
+  "dependencies": {
+    "axios": "^0.17.1",
+    "inquirer": "^4.0.1",
+    "random-word": "^2.0.0"
+  }
+}
