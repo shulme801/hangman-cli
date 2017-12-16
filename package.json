@@ -19,6 +19,7 @@
   "dependencies": {
     "axios": "^0.17.1",
     "inquirer": "^4.0.1",
+    "is-letter": "^1.1.1",
     "random-word": "^2.0.0"
   }
 }
