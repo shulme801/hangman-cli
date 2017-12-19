@@ -6,4 +6,4 @@ var Hangman = require("./Assets/javascript/hangman.js");
 var hangman = new Hangman();
 
 // Start playing
-hangman.play();
+hangman.initGame();

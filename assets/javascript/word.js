@@ -1,3 +1,5 @@
+
+
 var Letter = require("./Letter"); //Bring in the Letter constructor so we have the logic to analyze the guessed character.
 
 // The Word constructor is responsible for creating an array of Letter objects and determining if the user guessed every Letter correctly
@@ -5,7 +7,7 @@ function Word(word) {
   // The map() method creates a new array and calls the function in the parameter on every element in the calling array.
   this.letters = word.split("").map(function(char) {
     return new Letter(char);
-  console.log("letters is "+this.letters).
+  console.log("letters is "+this.letters);
   });
 }
 

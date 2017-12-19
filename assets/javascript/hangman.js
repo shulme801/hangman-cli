@@ -13,6 +13,7 @@ Each constructor function should be in its own file and be exported and required
 
 Look into function prototypes and use them for a few of your constructor's methods.
 */
+
 /* Pseudocode:
 	We'll create a "Hangman" constructor that gets instantiated in the "index.js" file that drives the game.
 	
@@ -22,6 +23,7 @@ Look into function prototypes and use them for a few of your constructor's metho
 
 	Next, define a set of game variables and methods:
 	** const guessLimit = 10
+
 	** myGame.startPlay() {
 	*** set guessesCount to 0
 	*** myGame.targetWord = new Word(randomWord()); using the random-word package to grab a random english word and make it a Word object.
@@ -41,7 +43,34 @@ Look into function prototypes and use them for a few of your constructor's metho
     ***  });
 	*** }
 */
+
 var inquirer 	= require("inquirer");
 var chalk    	= require("chalk"); //allows us to change the font color of console.log responses
 var randomWord	= require("random-word"); //returns a random English word
-var Word 	 	= require("./assets/javascript/Word"); //This contains the Word constructor and class methods/prototypes.
+var Word 	 	= require("./Word"); //This contains the Word constructor and class methods/prototypes.
+
+function Hangman() {
+	const guessLimit = 10;
+	
+	myGame = this;
+
+	myGame.initGame = function() {
+		var targetWord = randomWord(); //get a random English word
+		console.log("This is the target word "+myGame.targetWord);
+	}
+
+
+
+
+}
+
+module.exports = Hangman;
+
+
+
+
+
+
+
+
+
