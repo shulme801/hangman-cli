@@ -22,7 +22,7 @@ Look into function prototypes and use them for a few of your constructor's metho
 	var myGame = this; so that our "game" context is clearly not the inquirer's "this" context.
 
 	Next, define a set of game variables and methods:
-	** const guessLimit = 10
+	** var guessLimit = 10
 
 	** myGame.startPlay() {
 	*** set guessesCount to 0
@@ -30,7 +30,7 @@ Look into function prototypes and use them for a few of your constructor's metho
 	}
 	
 	***  -- we'll do a little recursion in this function, asking for guesses until user runs out of guesses or gets the word right
-	*** mygame.userGuess () {
+	*** mygame.guessLetters () {
 	***  inquire askForLetter().then (function {
 	***  if this was the last guess, display the myGame.targetWord using RED font from chalk package and call the 
 		   myGame.askForContinuedPlay function. This is the "base" case to get us out of the recursive loop.
@@ -50,19 +50,54 @@ var randomWord	= require("random-word"); //returns a random English word
 var Word 	 	= require("./Word"); //This contains the Word constructor and class methods/prototypes.
 
 function Hangman() {
-	const guessLimit = 10;
+	var guessesRemaining = 10;
+	var myGame = this;
 	
-	myGame = this;
 
 	myGame.initGame = function() {
-		var targetWord = randomWord(); //get a random English word
+		var randWord = randomWord();
+		myGame.targetWord = new Word(randWord);
+
 		console.log("This is the target word "+myGame.targetWord);
+		
+		myGame.guessLetters();
 	}
 
+	myGame.guessLetters = function() {
+		console.log("In guessLetters, targetWord is "+ myGame.targetWord);
+	} //end of the guessLatters function
+
+	myGame.makeAGuess = function() {
+		return inquirer
+		.prompt([
+		  //here's the prompt's object
+		  {
+		  	type: 		"input",
+		  	name: 		"choice",
+		  	message:    "Guess a letter",
+		  	validate:   function(val) {
+		  		return /[A-Za-z1-9]/ig.test(val); //use a RegEx to test whether the guessed letter is an alphanumeric
+		  	}
+
+		  }
+		]) 
+		.then(function(val) {
+			//See whether the guessed letter is present in the targetWord. If it is, let user know it was a valid guess
+			var correctGuess = myGame.targetWord.foundTheLetter(val.choice);
+
+			if (correctGuess) {
+				console.log(chalk.green("\nYou guessed correctly!\n"));
+			} else {
+				console.log(chalk.red("\nYou guessed wrong, try again!\n"));
+			}
+			guessesRemaining--;
+			console.log(chalk.blue("You have "+guessesRemaining+" guesses remaining"));
+
+		});
+	} //end of the makeAGuess function
 
 
-
-}
+} // end of the Hangman function
 
 module.exports = Hangman;
 

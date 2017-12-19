@@ -23,7 +23,7 @@ Word.prototype.toString = function() {
   return this.letters.join(' '); //we join the letters into one string
 };
 
-Word.prototype.guessedLetter = function(char) {
+Word.prototype.foundTheLetter = function(char) {
   // do any of the letters in the letters array match the user's guess?
   var foundLetter = false;
   this.letters.forEach(function(letter) {

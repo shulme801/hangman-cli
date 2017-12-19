@@ -3,10 +3,10 @@
 
 
 function Letter(guessedChar) {
-  // Use a Reg Ex to see whether the char is an alphanumeric. If it is, make it visible.
-  this.visible = !/[A-Za-z1-9]/i.test(char);
+  // Use a Reg Ex to see whether the guessed letter is an alphanumeric. If it is, make it visible.
+  this.visible = !/[A-Za-z1-9]/i.test(guessedChar);
   // In any case, save off the character.
-  this.char = char;
+  this.char = guessedChar;
 
 }
 
