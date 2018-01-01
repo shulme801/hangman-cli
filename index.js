@@ -1,8 +1,10 @@
-// This is the entry point to the Hangman game.
-// Pseudo code is located in the hangman.js file, which contains the logic that drives the game.
+/* This is the entry point to the Node cli Hangman game.See the hangman.js file 
+   detailed documentation and pseudo code.
+*/
+
 var Hangman = require("./Assets/javascript/hangman.js");
 
-// Start by initializing a new Hangman game object
+// Start by instantiating a new Hangman game object
 var hangman = new Hangman();
 
 // Start playing
