@@ -14,7 +14,7 @@ module.exports = [
 "Tampa Bay Rays",
 "Texas Rangers",
 "Toronto Blue Jays",
-"Arizon Diamondbacks",
+"Arizona Diamondbacks",
 "Atlanta Braves",
 "Chicago Cubs",
 "Cincinatti Reds",
@@ -27,6 +27,6 @@ module.exports = [
 "Pittsburgh Pirates",
 "San Diego Padres",
 "San Francisco Giants",
-"St. Louis Cardinals",
+"St Louis Cardinals",
 "Washington Nationals"
 ];

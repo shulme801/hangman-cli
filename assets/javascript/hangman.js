@@ -52,42 +52,77 @@ var teams		 = require("./mlb.js"); //The major league baseball teams
 const numGuesses = 10;
 
 function Hangman() {
-	var guessesRemaining = 10;
+	var guessesRemaining;
 	var currentTeam;
-	var currentGame = this; //Save off the current Hangman object's 'this' context!
+	var currentWins;
+	var currentLosses;
+	var thisObject       = this; //Save off the current Hangman object's 'this' context.
 
     //initGame is the entry point into the Hangman game logic. It sets guessesRemaining and calls the nextTeam function
 	this.initGame = function() {
-		this.guessesRemaining = numGuesses;
-		//Throw out the first pitch!!! Actually, get a random MLB team. To make the game more interesting, each team
-		// is identified by its city or state -- e.g., St. Louis Cardinals or Arizona Diamondbacks
+		
+		this.currentWins      = 0;
+		this.currentLosses    = 0;
+		
+		//Get a random Major League Baseball team name. Each team
+		// is identified by its city or state
+		// and the team's name -- e.g., St. Louis Cardinals or Arizona Diamondbacks.
 		this.nextTeam();
 	};
+
+	
 
 	//nextTeam grabs a random Major League Baseball team name, instantiates the team name into a Word object 
 	// -- that is, into an array of Letter objects. It displays the array (which will have an underscore for each
 	// printable character). There will be a space displayed where the character is a space, and any other char will
 	// be displayed as is.
 	this.nextTeam = function () {
-	
+		this.guessesRemaining = numGuesses;
 		var newTeam      = teams[Math.floor(Math.random() * teams.length)];
-		console.log("newTeam is "+newTeam);
 		this.currentTeam = new Word(newTeam); //turn this.currentTeam into an array of characters
-		
+		//As we begin, each of the letters in currentTeam is displayed as "_" -- that is, no letters have been guessed,
+		//and so no letters are visible. Note that the space character and any punctuation is always visible.
 		console.log ("\nCurrent Team to guess is "+this.currentTeam.toString()+"\n"); 
 		
 		this.guessTeam(); //Let's start guessing!
 	};
 	
+	this.displayCurrentStats = function() {
+		console.log("You currently have "+thisObject.currentWins+" wins and "+thisObject.currentLosses+" losses");
+	}
+
+	//guessTeam is the logic that gets the user's guess by calling getKeyStroke and then processes the guess
 	this.guessTeam = function() {
 		
 		this.getKeyStroke().then(function() {
-			console.log("/nCurrent Team to guess is "+currentGame.currentTeam.toString()+"\n");
-			currentGame.guessTeam();
+			console.log("\nCurrent Team to guess is "+thisObject.currentTeam.toString()+"\n");
+			if (thisObject.guessesRemaining === 0) {
+				// User is out of guesses. Show user the solution and ask whether user wants to play again
+				thisObject.currentLosses++; //record the loss
+				console.log("\nNo guesses remaining");
+				console.log("The Major League Baseball team was "+thisObject.currentTeam.solved());
+				thisObject.displayCurrentStats();
+				thisObject.continuePlay();
+			} else {
+				if (thisObject.currentTeam.allVisible()) {
+					//Success! -- If all letters are visible, the puzzle is solved
+					console.log("Congratulations -- you have solved the riddle!");
+					thisObject.currentWins++;
+					thisObject.displayCurrentStats();
+					thisObject.continuePlay();
+				} else {
+					thisObject.guessTeam();
+				}
+			}
 		});
 		
 	}
     
+    //getKeyStroke asks the user for a guess -- that is, a keystroke.  Since currentTeam, the word that user is
+    //trying to guess, is an object of type Word, we can use the
+    //guessLetter prototype function to see whether there's a match between the keystroke "guess" and one or more
+    //chars in the currentTeam.  If there is a match, let the user know. If there is no match, also let the user know
+    //and decrement the count of guesses remaining.
     this.getKeyStroke = function() {
 		return inquirer
 	    	.prompt([
@@ -96,27 +131,56 @@ function Hangman() {
           		name: "choice",
           		message: "Guess a letter!",
           		validate: function(keyStroke) {
-            		// The usermust guess a letter
+            		// The user must guess a letter. Punctuation and spaces are already visible, and there
+            		// are no numbers in the team names
             		return /[a-z]/gi.test(keyStroke) || "You must press an alphabetic key!";
-            		
           		}
           	 }
 	      ]).then(function(keyStroke) {
-	        // If the user's guess is in the current word, let them know
-	        var correctGuess = currentGame.currentTeam.guessLetter(keyStroke.choice);
-	        if (correctGuess) {
+	        // If the user's guess is in the current word, so inform the user
+	        var correctGuess = thisObject.currentTeam.guessLetter(keyStroke.choice);
+	        if (correctGuess) { 
+	          //Successful guesses don't reduce the number of guesses remaining
 	          console.log(chalk.green("\nCORRECT!!!\n"));
-
-	          // Otherwise decrement `guessesLeft`, and let the user know how many guesses are left
-	        }
-	        else {
-	          currentGame.guessesRemaining--;
+	        } else {
+	          //Otherwise decrement guessesRemaining and inform user 
+	          thisObject.guessesRemaining--;
 	          console.log(chalk.red("\nINCORRECT!!!\n"));
-	          console.log(currentGame.guessesRemaining + " guesses remaining!!!\n");
+	          console.log(thisObject.guessesRemaining + " guesses remaining!!!\n");
 	        }
 	      });
 	      
 	};
+
+	//the function continuePlay asks user whether user wants to continue playing. 
+	//If so, make a recursive call to this Hangman object's initGame function. 
+	//Otherwise, call the exit function
+	this.continuePlay = function() {
+	    inquirer.prompt([
+		 {
+		          type: "confirm",
+		          name: "playAgain",
+		          message: "Do You Want To Play Again?"
+         }
+		]).then(function(answer) {
+		        // If the user says yes to another game, play again, otherwise quit the game
+		        if (answer.playAgain) {
+		          thisObject.nextTeam();
+		        }
+		        else {
+		          thisObject.endGame();
+		        }
+		    }
+		);
+	};
+
+	//endGame exits the current instance of the Hangman object
+	this.endGame = function() {
+		console.log("\nYour final score was "+thisObject.currentWins+" wins and "+thisObject.currentLosses+" losses");
+		console.log("Thanks for playing!");
+		process.exit(0); //And thanks to stack overflow for the "clean exit" -- beats "ctrl-c"!
+	}
+
 
 } // end of the Hangman function
 

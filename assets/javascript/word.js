@@ -16,14 +16,13 @@ function Word(word) {
      return new Letter(char); //Iterate over each char in Word and make each of them into a Letter object.
      //Each Letter has two properties: the character itself, and the "visible" property.
   });
-  console.log("The word is "+this.letters);
-
 }
 
 Word.prototype.guessLetter = function (char) {
   var found = false;
 
-  //We will see if any of the letters in the "letters" array match the user's guessed char (the input parameter).
+  //We will see if any of the letters in the "letters" obj of type "Word". We try to 
+  //match the user's guessed char (the input parameter).
   //If they do, we'll set the visible property of the matching letters in "letters" to 
   //"visible" (via the letter.guess method).
   this.letters.forEach(letter => {
@@ -35,16 +34,10 @@ Word.prototype.guessLetter = function (char) {
   return found;
 }
 
-Word.prototype.solvedSoFar = function(){
-  var solvedArray=[];
-
-  this.letters.forEach(letter => {
-    if (visible) {
-      solvedArray.push(this.char);
-    }
-  });
-
-  return solvedArray.join('');
+Word.prototype.solved = function(){
+  return this.letters.map(function(letter) { // iterate over each Letter obj in the "letters" obj of type Word.
+    return letter.char; // return the actual character out of each individual Letter object.
+  }).join(''); // convert the array of returned characters into a string
 }
 
 //Override the Object toString() method with our own, so that when we output the Word object's letters,
@@ -54,9 +47,12 @@ Word.prototype.toString = function() {
 };
 
 
-// This code determines whether the user has guessed all the letters in the word correctly
-Word.prototype.foundAll = function() {
-  // does the callback return true for every letter? if so, every returns true. if not, returns false
+// This prototype method determines whether the user has guessed all the letters in the word correctly
+Word.prototype.allVisible = function() {
+  // look at each of the Letter's "visible" property. 
+  // From MDN, "The every() method tests whether all elements in the array pass the test 
+  // implemented by the provided function". So, allVisible will return "True" if and only if the
+  // "visible" property is turned on for every Letter object within the Word object "letters".
   return this.letters.every(function(letter) {
     return letter.visible;
   });
