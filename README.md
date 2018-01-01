@@ -1,5 +1,7 @@
 # Hangman-CLI Game by Steve Hulme
 ## Hangman Game Project
+### A video walkthrough of this project can be found at [YouTube](https://youtu.be/mODko5FMx4I). 
+
 ### Technologies Used
 * node.js — this is a command-line driven, node application.
 * npm — the inquirer and chalk npm modules are used.

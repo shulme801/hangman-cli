@@ -49,7 +49,8 @@
 
 	* nextTeam picks a random team name, turns it into a Word object, then displays the team name as a string of "_" and
 	  " ". Alphabetic letters (letters to be guessed) are displayed as "_". Spaces and punctuation characters are always
-	  visible.  nextTeam then calls guessTeam.
+	  visible.  The number of allowed misses ("misses remaining") is set to the constant numMisses.
+	  nextTeam then calls guessTeam.
 
 	Guessing:
 
@@ -57,13 +58,13 @@
        **After the guess (whether correct or incorrect). the game will present the current state of the hidden team name.
 	     Letters in the teamName riddle whose "visible" property is "true" (set by getKeyStroke) will be displayed.
        **Next, the game evaluates the state of play:
-       ***If number of guesses remaining is 0, game is over and the user has lost. 
+       ***If number of misses remaining is 0, game is over and the user has lost. 
        ****The number of losses is incremented. 
        ****Current wins/losses are displayed. 
        ****The user is asked whether the game should continue. 
        *****If user wants to continue, the game instance makes a recursive call to its nextTeam logic to get a new 
               team name to guess. If not, the game calls the exit logic.
-       ***Otherwise the number of guesses remaining is not 0 and so the user has not lost. 
+       ***Otherwise the number of misses remaining is not 0 and so the user has not lost. 
        *****If all the alphabetic chars in the teamName riddle are visible, the user has won. The game increments the number of wins, displays
 	          current wins and losses, and asks the user whether the game should continue. If user wants to continue, 
 	          the game makes a recursive call to its nextTeam logic to get a new team name to guess.
@@ -74,7 +75,7 @@
 	  in the teamName riddle. 
 	  **If the user has guessed a letter that appears in the team name, the "visible" property of the corresponding
 	      letters is set to "true".
-	  **Otherwise, the guess is incorrect and so the number of guesses is decremented by 1.
+	  **Otherwise, the guess is incorrect and so the number of misses remaining is decremented by 1.
 
 */
 
@@ -83,7 +84,7 @@ var chalk    	 = require("chalk"); //allows us to change the font color of conso
 var Word 	 	 = require("./Word"); //This contains the Word constructor and class methods/prototypes.
 var teams		 = require("./mlb.js"); //The major league baseball teams
 
-const numGuesses = 10;
+const numMisses = 10;
 
 function Hangman() {
 	var guessesRemaining;
@@ -92,7 +93,7 @@ function Hangman() {
 	var currentLosses;
 	var thisObject       = this; //Save off the current Hangman object's 'this' context.
 
-    //initGame is the entry point into the Hangman game logic. It sets guessesRemaining and calls the nextTeam function
+    //initGame is the entry point into the Hangman game logic. It sets missesRemaining and calls the nextTeam function
 	this.initGame = function() {
 		
 		this.currentWins      = 0;
@@ -111,7 +112,7 @@ function Hangman() {
 	// printable character). There will be a space displayed where the character is a space, and any other char will
 	// be displayed as is.
 	this.nextTeam = function () {
-		this.guessesRemaining = numGuesses;
+		this.missesRemaining = numMisses;
 		var newTeam      = teams[Math.floor(Math.random() * teams.length)];
 		this.currentTeam = new Word(newTeam); //turn this.currentTeam into an array of characters
 		//As we begin, each of the letters in currentTeam is displayed as "_" -- that is, no letters have been guessed,
@@ -132,10 +133,10 @@ function Hangman() {
 		
 		this.getKeyStroke().then(function() {
 			console.log("\nCurrent state of the riddle is "+thisObject.currentTeam.toString()+"\n");
-			if (thisObject.guessesRemaining === 0) {
-				// User is out of guesses. Show user the solution and ask whether user wants to play again
+			if (thisObject.missesRemaining === 0) {
+				// User has no remaining misses. Show user the solution and ask whether user wants to play again
 				thisObject.currentLosses++; //record the loss
-				console.log("\nNo guesses remaining");
+				console.log("\nNo misses remaining");
 				console.log("The Major League Baseball team riddle was "+thisObject.currentTeam.solved());
 				thisObject.displayCurrentStats();
 				thisObject.continuePlay();
@@ -158,7 +159,7 @@ function Hangman() {
     //trying to guess, is an object of type Word, we can use the
     //guessLetter prototype function to see whether there's a match between the keystroke "guess" and one or more
     //chars in the currentTeam.  If there is a match, let the user know. If there is no match, also let the user know
-    //and decrement the count of guesses remaining.
+    //and decrement the count of misses remaining.
     this.getKeyStroke = function() {
 		return inquirer
 	    	.prompt([
@@ -176,13 +177,13 @@ function Hangman() {
 	        // If the user's guess is in the current word, so inform the user
 	        var correctGuess = thisObject.currentTeam.guessLetter(keyStroke.choice);
 	        if (correctGuess) { 
-	          //Successful guesses don't reduce the number of guesses remaining
+	          //Successful 
 	          console.log(chalk.green("\nCORRECT!!!\n"));
 	        } else {
-	          //Otherwise decrement guessesRemaining and inform user 
-	          thisObject.guessesRemaining--;
+	          //Otherwise decrement allowable missesRemaining and inform user 
+	          thisObject.missesRemaining--;
 	          console.log(chalk.red("\nINCORRECT!!!\n"));
-	          console.log(thisObject.guessesRemaining + " guesses remaining!!!\n");
+	          console.log(thisObject.missesRemaining + " misses remaining!!!\n");
 	        }
 	      });
 	      
