@@ -1,11 +1,23 @@
-// 
+/*  The Letter constructor builds a Letter object from the input character. 
+      This Letter object has two properties. 
+        this.char is the character itself. this.visible is true if the character 
+          can be displayed.
+        this.visible will be set to true when a letter in the riddle is guessed by the user. In addition, spaces and 
+          punctuation characters are always visible. 
 
+   toString() overrides the inherited Object toString() method. Our toString() looks first at this.visible property.
+    If this.visible is true, it returns the underlying character value. If this.visible is false, it returns an 
+    underscore character. This method is used to build output displays of the current state of the riddle.
+
+   isVisible() returns true if the Letter object is currently displayable (e.g., if the underlying character has been 
+     guessed).
+     Otherwise, it returns the "_" character because the underlying character has not been guessed.
+
+   guess() is the method that actually determines whether the input guessed character matches the current this.char.
+*/
 
 function Letter(inChar) {
-  //The character object has two properties. this.char is the character itself.
-  //this.visible is true if the character is NOT alphabetic. In other words, if the character is
-  //not a printable character, we will display it (and user doesn't have to guess it). If the character is a letter,
-  //then don't display it automatically.
+  
   this.char    = inChar; //save off the input character itself into the Letter object
   /[a-z]/i.test(inChar) ? this.visible = false : this.visible = true;
   

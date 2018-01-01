@@ -1,4 +1,19 @@
+/* word.js contains the constructor for the Word object and its prototype methods. 
 
+   The Word object constructor creates an array of Letters. The array of Letters is an array of Letter objects. 
+     The riddle is instantiated through a Word object.
+
+   guessLetter() looks at the Letter objects in the Word object to see whether the input "char" matches one or more of them. 
+     if there is a match, return true.
+
+   solved() is a method that solves the riddle by returning a string in which all letters are visible.
+
+   toString() overrides the Object toString method. It looks at each Letter in the Word object, so that when we output 
+     the Word object's letters, we get a string in which each char is separated by a " "
+
+   allVisible() is a method that returns true if every letter is visible. We'll use this method to determine whether
+     the riddle has been solved.
+*/
 
 var Letter = require("./Letter"); //Bring in the Letter constructor so we have the logic to analyze the guessed character.
 
@@ -41,7 +56,7 @@ Word.prototype.solved = function(){
 }
 
 //Override the Object toString() method with our own, so that when we output the Word object's letters,
-//we get a string in which each char is separated by a " "
+//we get a string in which each char is separated by a " ".
 Word.prototype.toString = function() {
   return this.letters.join(' ');  
 };
