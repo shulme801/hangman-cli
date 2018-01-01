@@ -2,7 +2,7 @@
   "name": "hangman-cli",
   "version": "1.0.0",
   "description": "Command-line based hangman",
-  "main": "hangman-cli.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,10 +17,7 @@
   },
   "homepage": "https://github.com/shulme801/hangman-cli#readme",
   "dependencies": {
-    "axios": "^0.17.1",
     "chalk": "^2.3.0",
     "inquirer": "^4.0.1",
-    "is-letter": "^1.1.1",
-    "random-word": "^2.0.0"
   }
 }

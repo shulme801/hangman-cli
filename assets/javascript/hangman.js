@@ -24,7 +24,7 @@ Look into function prototypes and use them for a few of your constructor's metho
 	Next, define a set of game variables and methods:
 	** var guessLimit = 10
 
-	** myGame.startPlay() {
+	** myGame.initGame() {
 	*** set guessesCount to 0
 	*** myGame.targetWord = new Word(randomWord()); using the random-word package to grab a random english word and make it a Word object.
 	}
@@ -44,58 +44,79 @@ Look into function prototypes and use them for a few of your constructor's metho
 	*** }
 */
 
-var inquirer 	= require("inquirer");
-var chalk    	= require("chalk"); //allows us to change the font color of console.log responses
-var randomWord	= require("random-word"); //returns a random English word
-var Word 	 	= require("./Word"); //This contains the Word constructor and class methods/prototypes.
+var inquirer     = require("inquirer");
+var chalk    	 = require("chalk"); //allows us to change the font color of console.log responses
+var Word 	 	 = require("./Word"); //This contains the Word constructor and class methods/prototypes.
+var teams		 = require("./mlb.js"); //The major league baseball teams
+
+const numGuesses = 10;
 
 function Hangman() {
 	var guessesRemaining = 10;
-	var myGame = this;
+	var currentTeam;
+	var currentGame = this; //Save off the current Hangman object's 'this' context!
+
+    //initGame is the entry point into the Hangman game logic. It sets guessesRemaining and calls the nextTeam function
+	this.initGame = function() {
+		this.guessesRemaining = numGuesses;
+		//Throw out the first pitch!!! Actually, get a random MLB team. To make the game more interesting, each team
+		// is identified by its city or state -- e.g., St. Louis Cardinals or Arizona Diamondbacks
+		this.nextTeam();
+	};
+
+	//nextTeam grabs a random Major League Baseball team name, instantiates the team name into a Word object 
+	// -- that is, into an array of Letter objects. It displays the array (which will have an underscore for each
+	// printable character). There will be a space displayed where the character is a space, and any other char will
+	// be displayed as is.
+	this.nextTeam = function () {
 	
-
-	myGame.initGame = function() {
-		var randWord = randomWord();
-		myGame.targetWord = new Word(randWord);
-
-		console.log("This is the target word "+myGame.targetWord);
+		var newTeam      = teams[Math.floor(Math.random() * teams.length)];
+		console.log("newTeam is "+newTeam);
+		this.currentTeam = new Word(newTeam); //turn this.currentTeam into an array of characters
 		
-		myGame.guessLetters();
-	}
-
-	myGame.guessLetters = function() {
-		console.log("In guessLetters, targetWord is "+ myGame.targetWord);
-	} //end of the guessLatters function
-
-	myGame.makeAGuess = function() {
-		return inquirer
-		.prompt([
-		  //here's the prompt's object
-		  {
-		  	type: 		"input",
-		  	name: 		"choice",
-		  	message:    "Guess a letter",
-		  	validate:   function(val) {
-		  		return /[A-Za-z1-9]/ig.test(val); //use a RegEx to test whether the guessed letter is an alphanumeric
-		  	}
-
-		  }
-		]) 
-		.then(function(val) {
-			//See whether the guessed letter is present in the targetWord. If it is, let user know it was a valid guess
-			var correctGuess = myGame.targetWord.foundTheLetter(val.choice);
-
-			if (correctGuess) {
-				console.log(chalk.green("\nYou guessed correctly!\n"));
-			} else {
-				console.log(chalk.red("\nYou guessed wrong, try again!\n"));
-			}
-			guessesRemaining--;
-			console.log(chalk.blue("You have "+guessesRemaining+" guesses remaining"));
-
+		console.log ("\nCurrent Team to guess is "+this.currentTeam.toString()+"\n"); 
+		
+		this.guessTeam(); //Let's start guessing!
+	};
+	
+	this.guessTeam = function() {
+		
+		this.getKeyStroke().then(function() {
+			console.log("/nCurrent Team to guess is "+currentGame.currentTeam.toString()+"\n");
+			currentGame.guessTeam();
 		});
-	} //end of the makeAGuess function
+		
+	}
+    
+    this.getKeyStroke = function() {
+		return inquirer
+	    	.prompt([
+	    	 {
+		        type: "input",
+          		name: "choice",
+          		message: "Guess a letter!",
+          		validate: function(keyStroke) {
+            		// The usermust guess a letter
+            		return /[a-z]/gi.test(keyStroke) || "You must press an alphabetic key!";
+            		
+          		}
+          	 }
+	      ]).then(function(keyStroke) {
+	        // If the user's guess is in the current word, let them know
+	        var correctGuess = currentGame.currentTeam.guessLetter(keyStroke.choice);
+	        if (correctGuess) {
+	          console.log(chalk.green("\nCORRECT!!!\n"));
 
+	          // Otherwise decrement `guessesLeft`, and let the user know how many guesses are left
+	        }
+	        else {
+	          currentGame.guessesRemaining--;
+	          console.log(chalk.red("\nINCORRECT!!!\n"));
+	          console.log(currentGame.guessesRemaining + " guesses remaining!!!\n");
+	        }
+	      });
+	      
+	};
 
 } // end of the Hangman function
 
